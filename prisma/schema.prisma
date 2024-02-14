@@ -34,3 +34,10 @@ model user {
   password   String
   created_at DateTime @default(now())
 }
+
+model tokens{
+  id         String   @id @default(uuid())
+  user_id    String
+  value      String
+  created_at DateTime @default(now())
+}
