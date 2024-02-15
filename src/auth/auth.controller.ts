@@ -2,6 +2,8 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
+  Headers,
   Post,
   UnauthorizedException,
 } from "@nestjs/common";
@@ -39,10 +41,29 @@ export class AuthController {
 
     if (!isPasswordCorrect)
       throw new UnauthorizedException("Contraseña incorrecta.");
-    else
+    else {
+      const { value } = await this.authService.createToken(user);
       return {
-        ...user,
-        password: undefined,
+        user: {
+          ...user,
+          password: undefined,
+        },
+        token: value,
       };
+    }
+  }
+
+  @Get("verify")
+  async verifySession(@Headers("Authorization") token: string) {
+    const verifiedToken = await this.authService.verifyToken(token);
+    if (verifiedToken) {
+      const user = await this.authService.getUserById(verifiedToken.user_id);
+      return {
+        user: {
+          ...user,
+          password: undefined,
+        },
+      };
+    } else throw new UnauthorizedException("La sesión ha caducado.");
   }
 }

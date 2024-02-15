@@ -35,9 +35,9 @@ model user {
   created_at DateTime @default(now())
 }
 
-model tokens{
+model tokens {
   id         String   @id @default(uuid())
   user_id    String
-  value      String
+  value      String @db.VarChar(256)
   created_at DateTime @default(now())
 }
