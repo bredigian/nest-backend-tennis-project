@@ -17,7 +17,7 @@ export class AuthService {
     return {
       ...userCreated,
       password: undefined,
-      token: token.value,
+      token,
     };
   }
 
@@ -74,6 +74,14 @@ export class AuthService {
 
     const isValid = verify(token, JWT_SECRET);
     return isValid ? storedToken : false;
+  }
+
+  async deleteToken(id: string) {
+    return await this.prisma.tokens.delete({
+      where: {
+        id: id,
+      },
+    });
   }
 
   async hashPassword(password: string) {

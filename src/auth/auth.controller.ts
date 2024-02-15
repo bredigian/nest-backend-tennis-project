@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Headers,
   Post,
@@ -42,13 +43,13 @@ export class AuthController {
     if (!isPasswordCorrect)
       throw new UnauthorizedException("Contraseña incorrecta.");
     else {
-      const { value } = await this.authService.createToken(user);
+      const token = await this.authService.createToken(user);
       return {
         user: {
           ...user,
           password: undefined,
         },
-        token: value,
+        token,
       };
     }
   }
@@ -63,7 +64,13 @@ export class AuthController {
           ...user,
           password: undefined,
         },
+        token: verifiedToken,
       };
     } else throw new UnauthorizedException("La sesión ha caducado.");
+  }
+
+  @Delete("signout")
+  async signout(@Headers("Authorization") id: string) {
+    return await this.authService.deleteToken(id);
   }
 }
