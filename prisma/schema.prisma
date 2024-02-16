@@ -19,11 +19,13 @@ model product {
 
 model purchase {
   id         String   @id @default(uuid())
-  product_id String
   user_id    String
+  product_id String
+  unit_price Float
   quantity   Int
   total      Float
-  created_at DateTime @default(now())
+  status     String
+  created_at DateTime  @default(now())
 }
 
 model user {

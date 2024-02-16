@@ -13,11 +13,12 @@ export class PurchasesController {
 
   @Post()
   async createPurchase(
-    @Body() purchase: { product: Product; quantity: number },
+    @Body() purchase: { product: Product; quantity: number; user_id: string },
   ) {
-    return await this.purchasesService.generatePayment(
+    return await this.purchasesService.createPurchase(
       purchase.product,
       purchase.quantity,
+      purchase.user_id,
     );
   }
 }
