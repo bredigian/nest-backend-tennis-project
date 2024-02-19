@@ -33,4 +33,8 @@ export class PurchasesService {
   async getPublishableKey() {
     return STRIPE_PUBLISHABLE_KEY;
   }
+
+  async cancelIntent(id: string) {
+    return await stripe.paymentIntents.cancel(id);
+  }
 }

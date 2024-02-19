@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Post } from "@nestjs/common";
 import { PurchasesService } from "./purchases.service";
 
 @Controller("purchases")
@@ -20,16 +20,21 @@ export class PurchasesController {
       user_id: string;
     },
   ) {
-    const { client_secret } = await this.purchasesService.createPaymentLink(
+    const { id, client_secret } = await this.purchasesService.createPaymentLink(
       purchase.unit_price,
       purchase.quantity,
     );
-    return { client_secret };
+    return { id, client_secret };
   }
 
   @Get("authorization")
   async getStripeKey() {
     const key = await this.purchasesService.getPublishableKey();
     return { key };
+  }
+
+  @Delete("cancel")
+  async cancelIntent(@Body() data: { id: string }) {
+    return await this.purchasesService.cancelIntent(data.id);
   }
 }
