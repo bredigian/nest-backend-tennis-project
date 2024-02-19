@@ -9,16 +9,22 @@ import { PurchaseStatus } from "src/types/purchase.types";
 export class PurchasesService {
   constructor(private prisma: PrismaService) {}
 
-  async createPurchase(product: Product, quantity: number, user_id: string) {
+  async createPurchase(
+    payment_id: string,
+    product: Product,
+    quantity: number,
+    user_id: string,
+  ) {
     const { id, price } = product;
     return this.prisma.purchase.create({
       data: {
+        id: payment_id,
         product_id: id,
         unit_price: price,
         quantity,
         total: price * quantity,
         user_id,
-        status: PurchaseStatus.PENDING,
+        status: PurchaseStatus.SUCCESS,
       },
     });
   }

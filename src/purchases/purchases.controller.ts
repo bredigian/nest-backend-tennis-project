@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Post } from "@nestjs/common";
 import { PurchasesService } from "./purchases.service";
+import { product as Product } from "@prisma/client";
 
 @Controller("purchases")
 export class PurchasesController {
@@ -11,6 +12,24 @@ export class PurchasesController {
   }
 
   @Post()
+  async createPurchase(
+    @Body()
+    data: {
+      id: string;
+      product: Product;
+      quantity: number;
+      user_id: string;
+    },
+  ) {
+    return this.purchasesService.createPurchase(
+      data.id,
+      data.product,
+      data.quantity,
+      data.user_id,
+    );
+  }
+
+  @Post("intent")
   async createIntent(
     @Body()
     purchase: {
