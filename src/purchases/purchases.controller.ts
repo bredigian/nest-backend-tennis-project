@@ -1,5 +1,4 @@
 import { Body, Controller, Get, Post } from "@nestjs/common";
-import { product as Product } from "@prisma/client";
 import { PurchasesService } from "./purchases.service";
 
 @Controller("purchases")
@@ -12,13 +11,25 @@ export class PurchasesController {
   }
 
   @Post()
-  async createPurchase(
-    @Body() purchase: { product: Product; quantity: number; user_id: string },
+  async createIntent(
+    @Body()
+    purchase: {
+      product_id: string;
+      unit_price: number;
+      quantity: number;
+      user_id: string;
+    },
   ) {
-    return await this.purchasesService.createPurchase(
-      purchase.product,
+    const { client_secret } = await this.purchasesService.createPaymentLink(
+      purchase.unit_price,
       purchase.quantity,
-      purchase.user_id,
     );
+    return { client_secret };
+  }
+
+  @Get("authorization")
+  async getStripeKey() {
+    const key = await this.purchasesService.getPublishableKey();
+    return { key };
   }
 }

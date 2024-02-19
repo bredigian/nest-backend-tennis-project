@@ -1,3 +1,5 @@
+import { STRIPE_PUBLISHABLE_KEY, stripe } from "src/config/stripe";
+
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { product as Product } from "@prisma/client";
@@ -19,5 +21,16 @@ export class PurchasesService {
         status: PurchaseStatus.PENDING,
       },
     });
+  }
+
+  async createPaymentLink(unit_price: number, quantity: number) {
+    return await stripe.paymentIntents.create({
+      amount: Math.floor(unit_price * quantity * 100),
+      currency: "usd",
+    });
+  }
+
+  async getPublishableKey() {
+    return STRIPE_PUBLISHABLE_KEY;
   }
 }
