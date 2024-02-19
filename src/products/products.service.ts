@@ -18,18 +18,40 @@ export class ProductsService {
     });
   }
 
-  async updateById(
-    id: string,
-    stock: number,
-    quantity: number,
-  ): Promise<Product> {
-    return await this.prisma.product.update({
+  async stockAvailable(id: string, quantity: number): Promise<boolean> {
+    const product = await this.prisma.product.findUnique({
       where: {
         id,
       },
-      data: {
-        stock: stock - quantity,
-      },
     });
+    return product?.stock <= quantity;
+  }
+
+  async updateById(
+    id: string,
+    quantity: number,
+    isDecrement: boolean,
+  ): Promise<Product> {
+    return !isDecrement
+      ? await this.prisma.product.update({
+          where: {
+            id,
+          },
+          data: {
+            stock: {
+              increment: quantity,
+            },
+          },
+        })
+      : await this.prisma.product.update({
+          where: {
+            id,
+          },
+          data: {
+            stock: {
+              decrement: quantity,
+            },
+          },
+        });
   }
 }
