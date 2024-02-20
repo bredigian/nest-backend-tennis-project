@@ -12,11 +12,13 @@ export class AuthService {
   constructor(private prisma: PrismaService) {}
 
   async createUser(data: User) {
-    const userCreated = this.prisma.user.create({ data });
-    const token = await this.createToken(data);
+    const userCreated = await this.prisma.user.create({ data });
+    const token = await this.createToken(userCreated);
     return {
-      ...userCreated,
-      password: undefined,
+      user: {
+        ...userCreated,
+        password: undefined,
+      },
       token,
     };
   }
