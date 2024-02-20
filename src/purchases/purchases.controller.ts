@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  ForbiddenException,
+  Get,
+  Post,
+  Query,
+} from "@nestjs/common";
 import { PurchasesService } from "./purchases.service";
 import { product as Product } from "@prisma/client";
 
@@ -7,8 +15,9 @@ export class PurchasesController {
   constructor(private readonly purchasesService: PurchasesService) {}
 
   @Get()
-  async getPurchases() {
-    return "This will return all the purchases";
+  async getPurchases(@Query("id") user_id: string) {
+    if (user_id) return this.purchasesService.getPurchasesById(user_id);
+    throw new ForbiddenException("Es necesario el ID del usuario.");
   }
 
   @Post()

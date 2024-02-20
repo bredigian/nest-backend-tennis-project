@@ -1,13 +1,44 @@
+import { PurchaseExtended, PurchaseStatus } from "src/types/purchase.types";
 import { STRIPE_PUBLISHABLE_KEY, stripe } from "src/config/stripe";
 
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { product as Product } from "@prisma/client";
-import { PurchaseStatus } from "src/types/purchase.types";
 
 @Injectable()
 export class PurchasesService {
   constructor(private prisma: PrismaService) {}
+
+  async getPurchasesById(user_id: string) {
+    const purchases = await this.prisma.purchase.findMany({
+      where: {
+        user_id,
+      },
+    });
+    const data = await Promise.all(
+      purchases.map((purchase) => {
+        return new Promise(async (resolve) => {
+          const product = await this.prisma.product.findUnique({
+            where: {
+              id: purchase.product_id,
+            },
+            select: {
+              title: true,
+              image: true,
+              type: true,
+            },
+          });
+          resolve({
+            ...purchase,
+            product_title: product.title,
+            product_type: product.type,
+            product_image: product.image,
+          });
+        });
+      }),
+    );
+    return data as unknown as PurchaseExtended;
+  }
 
   async createPurchase(
     payment_id: string,
