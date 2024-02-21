@@ -1,15 +1,17 @@
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { compare, hash } from "bcrypt";
-import { sign, verify } from "jsonwebtoken";
 
-import { Injectable } from "@nestjs/common";
-import { JWT_SECRET } from "src/config/jwt";
+import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "src/prisma/prisma.service";
 import { SALT_ROUNDS } from "src/config/salt-rounds";
 import { user as User } from "@prisma/client";
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+  ) {}
 
   async createUser(data: User) {
     const userCreated = await this.prisma.user.create({ data });
@@ -55,8 +57,9 @@ export class AuthService {
   }
 
   async createToken(user: User) {
-    const token = sign({ id: user.id, username: user.username }, JWT_SECRET, {
-      expiresIn: "30d",
+    const token = await this.jwtService.signAsync({
+      id: user.id,
+      username: user.username,
     });
     return await this.prisma.tokens.create({
       data: {
@@ -74,16 +77,20 @@ export class AuthService {
     });
     if (!storedToken) return false;
 
-    const isValid = verify(token, JWT_SECRET);
+    const isValid = await this.jwtService.verifyAsync(token);
     return isValid ? storedToken : false;
   }
 
   async deleteToken(id: string) {
-    return await this.prisma.tokens.delete({
-      where: {
-        id: id,
-      },
-    });
+    try {
+      return await this.prisma.tokens.delete({
+        where: {
+          id: id,
+        },
+      });
+    } catch {
+      throw new NotFoundException("El token no se encontró.");
+    }
   }
 
   async hashPassword(password: string) {
