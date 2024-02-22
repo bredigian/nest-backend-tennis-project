@@ -10,14 +10,14 @@ import {
 } from "@nestjs/common";
 
 import { AuthService } from "./auth.service";
-import { user as User } from "@prisma/client";
+import { users } from "@prisma/client";
 
 @Controller("auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post("signup")
-  async signup(@Body() data: User) {
+  async signup(@Body() data: users) {
     const { username, email } = data;
 
     const userExists = await this.authService.userExists(username, email);
@@ -29,9 +29,9 @@ export class AuthController {
   }
 
   @Post("signin")
-  async signin(@Body() data: User) {
+  async signin(@Body() data: users) {
     const { username, password } = data;
-    const user: User = await this.authService.getUser(username);
+    const user: users = await this.authService.getUser(username);
 
     if (!user) throw new BadRequestException("Usuario no encontrado.");
 

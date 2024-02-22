@@ -1,17 +1,17 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { product as Product } from "@prisma/client";
+import { products } from "@prisma/client";
 
 @Injectable()
 export class ProductsService {
   constructor(private prisma: PrismaService) {}
 
-  async getAll(): Promise<Product[]> {
-    return await this.prisma.product.findMany();
+  async getAll(): Promise<products[]> {
+    return await this.prisma.products.findMany();
   }
 
-  async getById(id: string): Promise<Product> {
-    return await this.prisma.product.findUnique({
+  async getById(id: string): Promise<products> {
+    return await this.prisma.products.findUnique({
       where: {
         id,
       },
@@ -19,7 +19,7 @@ export class ProductsService {
   }
 
   async stockAvailable(id: string, quantity: number): Promise<boolean> {
-    const product = await this.prisma.product.findUnique({
+    const product = await this.prisma.products.findUnique({
       where: {
         id,
       },
@@ -31,9 +31,9 @@ export class ProductsService {
     id: string,
     quantity: number,
     isDecrement: boolean,
-  ): Promise<Product> {
+  ): Promise<products> {
     return !isDecrement
-      ? await this.prisma.product.update({
+      ? await this.prisma.products.update({
           where: {
             id,
           },
@@ -43,7 +43,7 @@ export class ProductsService {
             },
           },
         })
-      : await this.prisma.product.update({
+      : await this.prisma.products.update({
           where: {
             id,
           },

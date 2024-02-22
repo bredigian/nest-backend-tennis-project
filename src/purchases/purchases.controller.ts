@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { PurchasesService } from "./purchases.service";
-import { product as Product } from "@prisma/client";
+import { products } from "@prisma/client";
 import { AuthGuard } from "src/auth/auth.guard";
 
 @Controller("purchases")
@@ -29,7 +29,7 @@ export class PurchasesController {
     @Body()
     data: {
       id: string;
-      product: Product;
+      product: products;
       quantity: number;
       user_id: string;
     },

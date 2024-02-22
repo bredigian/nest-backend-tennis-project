@@ -3,14 +3,14 @@ import { STRIPE_PUBLISHABLE_KEY, stripe } from "src/config/stripe";
 
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { product as Product } from "@prisma/client";
+import { products } from "@prisma/client";
 
 @Injectable()
 export class PurchasesService {
   constructor(private prisma: PrismaService) {}
 
   async getPurchasesById(user_id: string) {
-    const purchases = await this.prisma.purchase.findMany({
+    const purchases = await this.prisma.purchases.findMany({
       where: {
         user_id,
       },
@@ -18,7 +18,7 @@ export class PurchasesService {
     const data = await Promise.all(
       purchases.map((purchase) => {
         return new Promise(async (resolve) => {
-          const product = await this.prisma.product.findUnique({
+          const product = await this.prisma.products.findUnique({
             where: {
               id: purchase.product_id,
             },
@@ -42,12 +42,12 @@ export class PurchasesService {
 
   async createPurchase(
     payment_id: string,
-    product: Product,
+    product: products,
     quantity: number,
     user_id: string,
   ) {
     const { id, price } = product;
-    return this.prisma.purchase.create({
+    return this.prisma.purchases.create({
       data: {
         id: payment_id,
         product_id: id,

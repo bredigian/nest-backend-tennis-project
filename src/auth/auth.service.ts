@@ -4,7 +4,7 @@ import { compare, hash } from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
 import { PrismaService } from "src/prisma/prisma.service";
 import { SALT_ROUNDS } from "src/config/salt-rounds";
-import { user as User } from "@prisma/client";
+import { users } from "@prisma/client";
 
 @Injectable()
 export class AuthService {
@@ -13,8 +13,8 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async createUser(data: User) {
-    const userCreated = await this.prisma.user.create({ data });
+  async createUser(data: users) {
+    const userCreated = await this.prisma.users.create({ data });
     const token = await this.createToken(userCreated);
     return {
       user: {
@@ -26,7 +26,7 @@ export class AuthService {
   }
 
   async getUser(username: string) {
-    return this.prisma.user.findFirst({
+    return this.prisma.users.findFirst({
       where: {
         username,
       },
@@ -34,7 +34,7 @@ export class AuthService {
   }
 
   async getUserById(id: string) {
-    return this.prisma.user.findUnique({
+    return this.prisma.users.findUnique({
       where: {
         id,
       },
@@ -42,12 +42,12 @@ export class AuthService {
   }
 
   async userExists(username: string, email: string) {
-    const userByUsername = await this.prisma.user.findFirst({
+    const userByUsername = await this.prisma.users.findFirst({
       where: {
         username,
       },
     });
-    const userByEmail = await this.prisma.user.findFirst({
+    const userByEmail = await this.prisma.users.findFirst({
       where: {
         email,
       },
@@ -56,7 +56,7 @@ export class AuthService {
     else return true;
   }
 
-  async createToken(user: User) {
+  async createToken(user: users) {
     const token = await this.jwtService.signAsync({
       id: user.id,
       username: user.username,

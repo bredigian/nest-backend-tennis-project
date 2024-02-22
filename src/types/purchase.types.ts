@@ -1,12 +1,12 @@
 import { ProductType } from "./products.types";
-import { purchase as Purchase } from "@prisma/client";
+import { purchases } from "@prisma/client";
 
 export enum PurchaseStatus {
   PENDING = "PENDING",
   SUCCESS = "SUCCESS",
 }
 
-export interface PurchaseExtended extends Purchase {
+export interface PurchaseExtended extends purchases {
   product_title: string;
   product_type: ProductType;
   product_image: string;

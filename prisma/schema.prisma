@@ -3,11 +3,11 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model product {
+model products {
   id          String @id @default(uuid())
   title       String
   description String @db.VarChar(1024)
@@ -17,7 +17,7 @@ model product {
   type        String
 }
 
-model purchase {
+model purchases {
   id         String   @id @default(uuid())
   user_id    String
   product_id String
@@ -28,7 +28,7 @@ model purchase {
   created_at DateTime  @default(now())
 }
 
-model user {
+model users {
   id         String   @id @default(uuid())
   name       String
   email      String
